@@ -1,4 +1,4 @@
-#include <iostream>
+#include <stdio.h>
 #include <vector>
 
 #include "SDL.h"
@@ -20,12 +20,11 @@ Sprite::Sprite(const char *sprite_filename)
 
 	textures.resize(1);
 	textures[0] = IMG_LoadTexture(active_context->renderer, sprite_filename);
-	printf("b: %p\n", textures[0]);
 
 	texture_index = 0;
 
 	if (!textures[0]) {
-		std::cout << "unable to load texture '" << sprite_filename << "': " << SDL_GetError() << std::endl;
+		fprintf(stderr, "%s/%s+%d: unable to load texture '%s': %s\n", __FILE__, __FUNCTION__, __LINE__, sprite_filename, SDL_GetError());
 		cleanup();
 		return;
 	}
@@ -34,6 +33,7 @@ Sprite::Sprite(const char *sprite_filename)
 Sprite::Sprite(std::vector<const char *> sprite_filenames, float fps)
 {
 	int i;
+
 	if (fps > 0) {
 		frame_timeout = frame_timeout_value = 1.0f / fps;
 	} else if (fps < 0) {
@@ -55,12 +55,13 @@ Sprite::Sprite(std::vector<const char *> sprite_filenames, float fps)
 		textures[i] = IMG_LoadTexture(active_context->renderer, sprite_filenames[i]);
 
 		if (!textures[i]) {
-			std::cout << "unable to load texture '" << sprite_filenames[i] << "': " << SDL_GetError() << std::endl;
+			fprintf(stderr, "%s/%s+%d: unable to load texture '%s': %s\n", __FILE__, __FUNCTION__, __LINE__, sprite_filenames[i], SDL_GetError());
 			cleanup();
 			return;
 		}
 	}
 
+	printf("created sprite: fps=%f, frames=%d\n", fps, frames);
 }
 
 Sprite::Sprite(const Sprite& s)
@@ -78,7 +79,7 @@ Sprite::Sprite(const Sprite& s)
 
 Sprite::~Sprite()
 {
-	std::cout << "sprite destroy" << std::endl;
+	printf("destroy sprite\n");
 	cleanup();
 }
 
@@ -113,5 +114,5 @@ void Sprite::draw(SDL_Rect *dst)
 			}
 		}
 	}
-	render_texture(active_context->renderer, textures[0], dst);
+	render_texture(active_context->renderer, textures[texture_index], dst);
 }

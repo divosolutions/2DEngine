@@ -1,5 +1,7 @@
 #pragma once
 
+#include "jansson.h"
+
 class Vector2
 {
 public:
@@ -12,5 +14,10 @@ public:
 	Vector2 operator+(const Vector2&);
 	Vector2 operator-(const Vector2&);
 	Vector2 operator*(const float s);
+	Vector2& operator=(const Vector2&);
+	Vector2& operator+=(const Vector2&);
+
+	json_t* serialize(void);
+	int deserialize(json_t*);
 };
 

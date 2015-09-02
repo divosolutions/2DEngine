@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <vector>
 
+#include "jansson.h"
 #include "SDL.h"
 #include "SDL_image.h"
 
@@ -18,10 +19,71 @@
 
 struct engine_context *active_context;
 
+const char *game_setup_file = "game_setup.json";
+
+void serialize_objects_to_file(const char *filename, std::vector<BaseGameObject*> *objects)
+{
+	json_t *root = json_object();
+	json_t *object_array = json_array();
+
+	if (!root) {
+		fprintf(stderr, "%s/%s+%d: unable to allocate json object\n", __FILE__, __FUNCTION__, __LINE__);
+		return;
+	}
+
+	for (std::vector<BaseGameObject*>::iterator it = objects->begin(); it != objects->end(); it++) {
+		json_array_append(object_array, (*it)->serialize());
+	}
+	
+	json_object_set(root, "gameObjects", object_array);
+
+	FILE *fp;
+	fopen_s(&fp, filename, "w");
+
+	if (!fp) {
+		fprintf(stderr, "%s/%s+%d: unable to open file '%s' for writing\n", __FILE__, __FUNCTION__, __LINE__, filename);
+		return;
+	}
+
+	json_dumpf(root, fp, JSON_INDENT(4));
+
+	json_decref(root);
+}
+
+void deserialize_objects_from_file(const char *filename, std::vector<BaseGameObject*> *objects)
+{
+	json_t *root;
+	json_error_t json_error_ret;
+
+	FILE *fp;
+	fopen_s(&fp, filename, "r");
+
+	if (!fp) {
+		fprintf(stderr, "%s/%s+%d: unable to open file '%s' for reading\n", __FILE__, __FUNCTION__, __LINE__, filename);
+		return;
+	}
+
+	root = json_loadf(fp, 0, &json_error_ret);
+
+	if (root) {
+		json_t *game_objects = json_object_get(root, "gameObjects");
+		size_t size = json_array_size(game_objects);
+
+		objects->resize(size);
+
+		for (int i = 0; i < size; i++) {
+			(*objects)[i] = new BaseGameObject();
+			(*objects)[i]->deserialize(json_array_get(game_objects, i));
+		}
+	}
+	json_decref(root);
+}
+
 int main(int argc, char *argv[])
 {
 	int ret = 0;
 
+	std::vector<const char*> fnames(4);
 	std::vector<BaseGameObject*> objects;
 	std::vector<std::vector<BaseGameObject*>> ordered_render_objects;
 
@@ -51,25 +113,7 @@ int main(int argc, char *argv[])
 	// SDL 2.0 now uses textures to draw things but SDL_LoadBMP returns a surface
 	// this lets us choose when to upload or remove textures from the GPU
 
-	objects.resize(4);
-
-	
-	objects[0] = new BaseGameObject("hello.tif");	
-	objects[1] = new BaseGameObject("hello.bmp");
-	objects[2] = new BaseGameObject("hello.jpg");
-	objects[3] = new BaseGameObject("hello.png");
-
-	objects[0]->position = Vector2(0.0, 0.0);
-	objects[1]->position = Vector2(cfg.window_width/2.0f, 0.0f);
-	objects[2]->position = Vector2(0.0, cfg.window_height / 2.0f);
-	objects[3]->position = Vector2(cfg.window_width / 2.0f, cfg.window_height / 2.0f);
-
-	objects[0]->sorting_layer = 0;
-	objects[1]->sorting_layer = 1;
-	objects[2]->sorting_layer = 2;
-	objects[3]->sorting_layer = 3;
-
-	objects[0]->size = objects[1]->size = objects[2]->size = objects[3]->size = Vector2(cfg.window_width / 2.0f, cfg.window_height / 2.0f);
+	deserialize_objects_from_file(game_setup_file, &objects);
 
 	ordered_render_objects.resize(4);
 
@@ -116,9 +160,11 @@ int main(int argc, char *argv[])
 
 main_exit:
 
+	serialize_objects_to_file(game_setup_file, &objects);
+
 	//Clean up our objects and quit
 	for (std::vector<BaseGameObject*>::iterator it = objects.begin(); it != objects.end(); it++) {
-		(*it)->cleanup();
+		delete (*it);
 	}
 
 	SDL_DestroyRenderer(context.renderer);
