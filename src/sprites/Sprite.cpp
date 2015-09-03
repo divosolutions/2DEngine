@@ -12,7 +12,7 @@
 Sprite::Sprite()
 {}
 
-Sprite::Sprite(const char *sprite_filename)
+Sprite::Sprite(char *sprite_filename)
 {
 	frame_timeout = frame_timeout_value = FLT_MAX;
 
@@ -30,7 +30,7 @@ Sprite::Sprite(const char *sprite_filename)
 	}
 }
 
-Sprite::Sprite(std::vector<const char *> sprite_filenames, float fps)
+Sprite::Sprite(std::vector<char *> sprite_filenames, float fps)
 {
 	int i;
 

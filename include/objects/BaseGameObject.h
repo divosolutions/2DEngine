@@ -11,14 +11,16 @@
 class BaseGameObject
 {
 	int id;
-	std::vector<const char*> sprite_filenames;
+	std::vector<char*> sprite_filenames;
 	float fps;
 	Vector2 position;
 	SDL_Rect dst;
 	Sprite *sprite;
 	Vector2 size;
+	std::vector<BaseGameObject*> children;
 
 	void update_dst(void);
+	int get_child_index(BaseGameObject *);
 public:
 	bool enabled;
 	bool draw_sprite;
@@ -28,13 +30,18 @@ public:
 
 	BaseGameObject();
 	BaseGameObject(int id);
-	BaseGameObject(int id, const char*);
-	BaseGameObject(int id, std::vector<const char*>, float fps);
+	BaseGameObject(int id, char*);
+	BaseGameObject(int id, std::vector<char*>, float fps);
 	~BaseGameObject();
 
 	void init(void);
 	void draw(void);
 	void update(void);
+
+	void add_child(BaseGameObject *);
+	void remove_child(BaseGameObject *);
+	std::vector<BaseGameObject*> get_direct_children(void);
+	void BaseGameObject::get_all_children(std::vector<BaseGameObject*> *ret);
 
 	void move_to(Vector2*);
 	void move_by(Vector2*);

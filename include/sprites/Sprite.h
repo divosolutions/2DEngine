@@ -18,8 +18,8 @@ private:
 public:
 	std::vector<SDL_Texture*> textures;
 	Sprite();
-	Sprite(const char * sprite_filename);
-	Sprite(std::vector<const char*> sprite_filenames, float fps);
+	Sprite(char * sprite_filename);
+	Sprite(std::vector<char*> sprite_filenames, float fps);
 	Sprite(const Sprite&);
 
 	~Sprite();

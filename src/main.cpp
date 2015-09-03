@@ -18,6 +18,8 @@
 #include "objects/BaseGameObject.h"
 
 struct engine_context *active_context;
+std::vector<BaseGameObject*> scene_root;
+std::vector<BaseGameObject*> objects;
 
 const char *game_setup_file = "game_setup.json";
 
@@ -35,22 +37,24 @@ void serialize_objects_to_file(const char *filename, std::vector<BaseGameObject*
 		json_array_append(object_array, (*it)->serialize());
 	}
 	
-	json_object_set(root, "gameObjects", object_array);
+	json_object_set(root, "scene", object_array);
 
 	FILE *fp;
 	fopen_s(&fp, filename, "w");
 
 	if (!fp) {
 		fprintf(stderr, "%s/%s+%d: unable to open file '%s' for writing\n", __FILE__, __FUNCTION__, __LINE__, filename);
+		json_decref(root);
 		return;
 	}
 
 	json_dumpf(root, fp, JSON_INDENT(4));
 
+	fclose(fp);
 	json_decref(root);
 }
 
-void deserialize_objects_from_file(const char *filename, std::vector<BaseGameObject*> *objects)
+int deserialize_objects_from_file(const char *filename, std::vector<BaseGameObject*> *objects)
 {
 	json_t *root;
 	json_error_t json_error_ret;
@@ -60,13 +64,14 @@ void deserialize_objects_from_file(const char *filename, std::vector<BaseGameObj
 
 	if (!fp) {
 		fprintf(stderr, "%s/%s+%d: unable to open file '%s' for reading\n", __FILE__, __FUNCTION__, __LINE__, filename);
-		return;
+		return (1);
 	}
 
 	root = json_loadf(fp, 0, &json_error_ret);
+	fclose(fp);
 
 	if (root) {
-		json_t *game_objects = json_object_get(root, "gameObjects");
+		json_t *game_objects = json_object_get(root, "scene");
 		size_t size = json_array_size(game_objects);
 
 		objects->resize(size);
@@ -75,8 +80,13 @@ void deserialize_objects_from_file(const char *filename, std::vector<BaseGameObj
 			(*objects)[i] = new BaseGameObject();
 			(*objects)[i]->deserialize(json_array_get(game_objects, i));
 		}
+	} else {
+		fprintf(stderr, "error while parsing json in '%s' line %d:%d: %s\n", filename, json_error_ret.line, json_error_ret.column, json_error_ret.text);
+		return (1);
 	}
 	json_decref(root);
+
+	return (0);
 }
 
 int main(int argc, char *argv[])
@@ -84,7 +94,6 @@ int main(int argc, char *argv[])
 	int ret = 0;
 
 	std::vector<const char*> fnames(4);
-	std::vector<BaseGameObject*> objects;
 	std::vector<std::vector<BaseGameObject*>> ordered_render_objects;
 
 	struct engine_context context;
@@ -113,7 +122,14 @@ int main(int argc, char *argv[])
 	// SDL 2.0 now uses textures to draw things but SDL_LoadBMP returns a surface
 	// this lets us choose when to upload or remove textures from the GPU
 
-	deserialize_objects_from_file(game_setup_file, &objects);
+	if (deserialize_objects_from_file(game_setup_file, &scene_root)) {
+		goto main_exit;
+	}
+
+	for (int i = 0; i < scene_root.size(); i++) {
+		objects.insert(objects.begin(), scene_root[i]);
+		scene_root[i]->get_all_children(&objects);
+	}
 
 	ordered_render_objects.resize(4);
 
@@ -132,6 +148,7 @@ int main(int argc, char *argv[])
 	// render loop
 	bool run = true;
 	engine_time_init();
+	Vector2 *m = new Vector2(24.0f, 24.0f);
 	
 	while (run) {
 		SDL_Event event;
@@ -154,13 +171,20 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		scene_root[0]->move_by(&(*m * Time.delta_time));
+
+		if (scene_root[0]->get_position().y > cfg.window_height / 2) {
+			scene_root[0]->move_to(&Vector2(0, 0));
+		}
+
 		// present the content rendered to the renderer
 		SDL_RenderPresent(active_context->renderer);
 	}
+	delete m;
 
 main_exit:
 
-	serialize_objects_to_file(game_setup_file, &objects);
+	serialize_objects_to_file("out.json", &scene_root);
 
 	//Clean up our objects and quit
 	for (std::vector<BaseGameObject*>::iterator it = objects.begin(); it != objects.end(); it++) {

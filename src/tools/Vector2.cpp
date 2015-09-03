@@ -7,6 +7,12 @@ Vector2::Vector2()
 	x = y = 0;
 }
 
+Vector2::Vector2(int _x, int _y)
+{
+	x = (float) _x;
+	y = (float) _y;
+}
+
 Vector2::Vector2(float _x, float _y)
 {
 	x = _x;
