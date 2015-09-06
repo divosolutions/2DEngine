@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "jansson.h"
-#include "SDL.h"
 
 #include "sprites/Sprite.h"
 #include "tools/Vector2.h"

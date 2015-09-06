@@ -1,7 +1,5 @@
 #pragma once
 
-#include "jansson.h"
-
 class Vector2
 {
 public:
