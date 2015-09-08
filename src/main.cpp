@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 		goto main_exit;
 	}
 
-	for (int i = 0; i < scene_root.size(); i++) {
+	for (size_t i = 0; i < scene_root.size(); i++) {
 		objects.insert(objects.begin(), scene_root[i]);
 		scene_root[i]->get_all_children(&objects);
 	}
@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
 		// clear the renderer
 		SDL_RenderClear(active_context->renderer);
 
-		for (int sorting_layer = 0; sorting_layer < ordered_render_objects.size(); sorting_layer++) {
-			for (int sorting_order = 0; sorting_order < ordered_render_objects[sorting_layer].size(); sorting_order++) {
+		for (size_t sorting_layer = 0; sorting_layer < ordered_render_objects.size(); sorting_layer++) {
+			for (size_t sorting_order = 0; sorting_order < ordered_render_objects[sorting_layer].size(); sorting_order++) {
 				ordered_render_objects[sorting_layer][sorting_order]->draw();
 			}
 		}

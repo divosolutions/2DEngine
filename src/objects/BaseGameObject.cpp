@@ -20,10 +20,10 @@ void BaseGameObject::update_dst(void)
 int BaseGameObject::get_child_index(BaseGameObject *b)
 {
 	printf("search for BaseGameObject %p\n", b);
-	for (int i = 0; i < children.size(); i++) {
+	for (size_t i = 0; i < children.size(); i++) {
 		printf("child is %p\n", children[i]);
 		if (children[i] == b) {
-			return (i);
+			return ((int) i);
 		}
 	}
 
@@ -109,7 +109,7 @@ std::vector<BaseGameObject*> BaseGameObject::get_direct_children(void)
 {
 	ret->insert(ret->begin(), children.begin(), children.end());
 
-	for (int i = 0; i < children.size(); i++) {
+	for (size_t i = 0; i < children.size(); i++) {
 		children[i]->get_all_children(ret);
 	}
 
@@ -124,7 +124,7 @@ void BaseGameObject::move_to(Vector2 *pos)
 	Vector2 delta = *pos - position;
 	position = *pos;
 
-	for (int i = 0; i < children.size(); i++) {
+	for (size_t i = 0; i < children.size(); i++) {
 		children[i]->move_by(&delta);
 	}
 	update_dst();
@@ -134,7 +134,7 @@ void BaseGameObject::move_by(Vector2 *pos)
 {
 	position += *pos;
 
-	for (int i = 0; i < children.size(); i++) {
+	for (size_t i = 0; i < children.size(); i++) {
 		children[i]->move_by(pos);
 	}
 
@@ -165,7 +165,7 @@ Vector2 BaseGameObject::get_size(void)
 
 void BaseGameObject::cleanup(void)
 {
-	for (int i = 0; i < sprite_filenames.size(); i++) {
+	for (size_t i = 0; i < sprite_filenames.size(); i++) {
 		free(sprite_filenames[i]);
 	}
 	children.clear();
@@ -213,7 +213,7 @@ json_t * BaseGameObject::serialize(void)
 		return nullptr;
 	}
 
-	for (int i = 0; i < sprite_filenames.size(); i++) {
+	for (size_t i = 0; i < sprite_filenames.size(); i++) {
 		json_t *entry = json_object();
 
 		if (!entry) {
@@ -238,7 +238,7 @@ json_t * BaseGameObject::serialize(void)
 		return nullptr;
 	}
 
-	for (int i = 0; i < children.size(); i++) {
+	for (size_t i = 0; i < children.size(); i++) {
 		json_array_append(tmp_obj, children[i]->serialize());
 	}
 	json_object_set(root, "children", tmp_obj);
@@ -274,7 +274,7 @@ int BaseGameObject::deserialize(json_t * root)
 	if (tmp_obj) {
 		sprite_filenames.resize(json_array_size(tmp_obj));
 
-		for (int i = 0; i < json_array_size(tmp_obj); i++) {
+		for (size_t i = 0; i < json_array_size(tmp_obj); i++) {
 			json_t *entry = json_array_get(tmp_obj, i);
 			int index = (int) json_integer_value(json_object_get(entry, "index"));
 			json_t *file_object = json_object_get(entry, "file");
@@ -292,7 +292,7 @@ int BaseGameObject::deserialize(json_t * root)
 	if (tmp_obj) {
 		children.resize(json_array_size(tmp_obj));
 
-		for (int i = 0; i < json_array_size(tmp_obj); i++) {
+		for (size_t i = 0; i < json_array_size(tmp_obj); i++) {
 			children[i] = new BaseGameObject();
 			children[i]->deserialize(json_array_get(tmp_obj, i));
 		}

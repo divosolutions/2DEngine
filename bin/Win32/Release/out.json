@@ -1,0 +1,169 @@
+{
+    "scene": [
+        {
+            "id": 0,
+            "enabled": true,
+            "fps": 0.5,
+            "size": {
+                "x": 400.0,
+                "y": 225.0
+            },
+            "sorting_layer": 0,
+            "children": [
+                {
+                    "id": 1,
+                    "enabled": true,
+                    "fps": 10.0,
+                    "size": {
+                        "x": 400.0,
+                        "y": 225.0
+                    },
+                    "sorting_layer": 1,
+                    "children": [],
+                    "sorting_order": 0,
+                    "draw_sprite": true,
+                    "dst": {
+                        "h": 225,
+                        "x": 492,
+                        "y": 92,
+                        "w": 400
+                    },
+                    "position": {
+                        "x": 492.47079467773438,
+                        "y": 92.471969604492188
+                    },
+                    "sprites": [
+                        {
+                            "index": 0,
+                            "file": "hello.tif"
+                        },
+                        {
+                            "index": 1,
+                            "file": "hello.bmp"
+                        },
+                        {
+                            "index": 2,
+                            "file": "hello.png"
+                        },
+                        {
+                            "index": 3,
+                            "file": "hello.jpg"
+                        }
+                    ]
+                }
+            ],
+            "sorting_order": 0,
+            "draw_sprite": true,
+            "dst": {
+                "h": 225,
+                "x": 42,
+                "y": 92,
+                "w": 400
+            },
+            "position": {
+                "x": 42.471992492675781,
+                "y": 92.471969604492188
+            },
+            "sprites": [
+                {
+                    "index": 0,
+                    "file": "hello.tif"
+                },
+                {
+                    "index": 1,
+                    "file": "hello.bmp"
+                },
+                {
+                    "index": 2,
+                    "file": "hello.png"
+                },
+                {
+                    "index": 3,
+                    "file": "hello.jpg"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "enabled": true,
+            "fps": 5.0,
+            "size": {
+                "x": 400.0,
+                "y": 225.0
+            },
+            "sorting_layer": 2,
+            "children": [],
+            "sorting_order": 0,
+            "draw_sprite": true,
+            "dst": {
+                "h": 225,
+                "x": 0,
+                "y": 225,
+                "w": 400
+            },
+            "position": {
+                "x": 0.0,
+                "y": 225.0
+            },
+            "sprites": [
+                {
+                    "index": 0,
+                    "file": "hello.tif"
+                },
+                {
+                    "index": 1,
+                    "file": "hello.bmp"
+                },
+                {
+                    "index": 2,
+                    "file": "hello.png"
+                },
+                {
+                    "index": 3,
+                    "file": "hello.jpg"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "enabled": true,
+            "fps": 1.5,
+            "size": {
+                "x": 400.0,
+                "y": 225.0
+            },
+            "sorting_layer": 3,
+            "children": [],
+            "sorting_order": 0,
+            "draw_sprite": true,
+            "dst": {
+                "h": 225,
+                "x": 400,
+                "y": 225,
+                "w": 400
+            },
+            "position": {
+                "x": 400.0,
+                "y": 225.0
+            },
+            "sprites": [
+                {
+                    "index": 0,
+                    "file": "hello.tif"
+                },
+                {
+                    "index": 1,
+                    "file": "hello.bmp"
+                },
+                {
+                    "index": 2,
+                    "file": "hello.png"
+                },
+                {
+                    "index": 3,
+                    "file": "hello.jpg"
+                }
+            ]
+        }
+    ]
+}

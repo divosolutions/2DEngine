@@ -59,7 +59,7 @@ int deserialize_objects_from_file(const char *filename, std::vector<BaseGameObje
 
 		objects->resize(size);
 
-		for (int i = 0; i < size; i++) {
+		for (size_t i = 0; i < size; i++) {
 			(*objects)[i] = new BaseGameObject();
 			(*objects)[i]->deserialize(json_array_get(game_objects, i));
 		}
